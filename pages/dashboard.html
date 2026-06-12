@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabores del Mundo - Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="dashboard.html">Sabores del Mundo</a>
+        <ul class="navbar-nav">
+            <li><a href="dashboard.html" class="active">Inicio</a></li>
+            <li><a href="mesas.html">Mesas</a></li>
+            <li><a href="reservas.html">Reservas</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="pedidos.html">Pedidos</a></li>
+        </ul>
+        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <div class="page-header">
+            <h2 id="bienvenida">Bienvenido</h2>
+            <p>Panel de administración del restaurante</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="icon">🪑</div>
+                <h3 id="totalMesas">0</h3>
+                <p>Mesas disponibles</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📋</div>
+                <h3 id="totalReservas">0</h3>
+                <p>Reservas pendientes</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🍽️</div>
+                <h3 id="totalProductos">0</h3>
+                <p>Productos en menú</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🛒</div>
+                <h3 id="totalPedidos">0</h3>
+                <p>Pedidos activos</p>
+            </div>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="cards-grid">
+            <div class="card" onclick="window.location.href='mesas.html'" style="cursor:pointer">
+                <h3>Gestión de Mesas</h3>
+                <p>Administra las mesas del restaurante, cambia estados y capacidades.</p>
+            </div>
+            <div class="card" onclick="window.location.href='reservas.html'" style="cursor:pointer">
+                <h3>Gestión de Reservas</h3>
+                <p>Registra y administra las reservas de los clientes.</p>
+            </div>
+            <div class="card" onclick="window.location.href='productos.html'" style="cursor:pointer">
+                <h3>Gestión de Productos</h3>
+                <p>Administra el menú del restaurante y sus categorías.</p>
+            </div>
+            <div class="card" onclick="window.location.href='pedidos.html'" style="cursor:pointer">
+                <h3>Gestión de Pedidos</h3>
+                <p>Registra y administra los pedidos de las mesas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

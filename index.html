@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabores del Mundo - Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="login-container">
+
+        <!-- Lado izquierdo con imagenes y animaciones -->
+        <div class="login-left">
+            <h1>Sabores del Mundo</h1>
+            <p>El mejor restaurante de la ciudad</p>
+
+            <div class="food-grid">
+                <div class="food-item">
+                    
+                    <p>Pizzas</p>
+                </div>
+                <div class="food-item">
+                    
+                    <p>Hamburguesas</p>
+                </div>
+                <div class="food-item">
+                    
+                    <p>Ensaladas</p>
+                </div>
+                <div class="food-item">
+                    
+                    <p>Postres</p>
+                </div>
+                <div class="food-item">
+                    
+                    <p>Bebidas</p>
+                </div>
+                <div class="food-item">
+                    
+                    <p>Carnes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lado derecho con el formulario -->
+        <div class="login-right">
+            <div class="login-box">
+                <h2>Bienvenido</h2>
+                <p>Inicia sesión para continuar</p>
+
+                <div id="mensaje"></div>
+
+                <form id="formLogin">
+                    <div class="form-group">
+                        <label>Usuario o Correo</label>
+                        <input type="text" id="usuario" placeholder="Ingresa tu usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="contrasena" placeholder="Ingresa tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Ingresar</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <script src="js/auth.js"></script>
+</body>
+</html>
