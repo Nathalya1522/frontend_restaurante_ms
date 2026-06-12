@@ -1,16 +1,23 @@
-// URL base del microservicio de reservas
 const RESERVAS_URL = 'http://127.0.0.1:8002';
 
-// Verificar sesión
 const token = localStorage.getItem('token');
 if (!token) {
     window.location.href = '../index.html';
 }
 
-// Variable para saber si estamos editando
 let reservaEditandoId = null;
+let todasLasReservas  = [];
 
-// Cargar mesas en el select
+document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = '../index.html';
+});
+
+document.getElementById('btnGuardarReserva').addEventListener('click', guardarReserva);
+document.getElementById('btnCancelarReserva').addEventListener('click', cancelarEdicion);
+document.getElementById('filtroEstado').addEventListener('change', filtrarReservas);
+
 async function cargarMesas() {
     try {
         const response = await fetch(`${RESERVAS_URL}/mesas`, {
@@ -18,186 +25,153 @@ async function cargarMesas() {
         });
         const mesas = await response.json();
         const select = document.getElementById('mesa_id');
-        mesas.forEach(mesa => {
-            select.innerHTML += `<option value="${mesa.id}">${mesa.numero} (Cap: ${mesa.capacidad})</option>`;
+        select.innerHTML = '<option value="">Selecciona una mesa</option>';
+        mesas.forEach(function(mesa) {
+            const option = document.createElement('option');
+            option.value = mesa.id;
+            option.textContent = `Mesa ${mesa.numero} (Cap: ${mesa.capacidad})`;
+            select.appendChild(option);
         });
-    } catch (error) {
-        console.error('Error al cargar mesas:', error);
-    }
+    } catch (e) { /* sin conexión */ }
 }
 
-// Cargar todas las reservas
 async function cargarReservas() {
     try {
         const response = await fetch(`${RESERVAS_URL}/reservas`, {
             headers: { 'Authorization': token }
         });
-        const reservas = await response.json();
-        mostrarReservas(reservas);
+        todasLasReservas = await response.json();
+        mostrarReservas(todasLasReservas);
     } catch (error) {
-        document.getElementById('listaReservas').innerHTML = '<p class="mensaje-error">Error al cargar las reservas</p>';
+        document.getElementById('listaReservas').innerHTML = '<p class="mensaje-error">Error al cargar las reservas.</p>';
     }
 }
 
-// Mostrar reservas en pantalla
+function filtrarReservas() {
+    const estado = document.getElementById('filtroEstado').value;
+    const filtradas = estado
+        ? todasLasReservas.filter(function(r) { return r.estado === estado; })
+        : todasLasReservas;
+    mostrarReservas(filtradas);
+}
+
 function mostrarReservas(reservas) {
     const lista = document.getElementById('listaReservas');
-
     if (reservas.length === 0) {
-        lista.innerHTML = '<p>No hay reservas registradas</p>';
+        lista.innerHTML = '<p>No hay reservas registradas.</p>';
         return;
     }
-
-    lista.innerHTML = reservas.map(reserva => `
-        <div class="card">
-            <h3>${reserva.nombre_cliente}</h3>
-            <p>Teléfono: ${reserva.telefono_cliente}</p>
-            <p>Personas: ${reserva.cantidad_personas}</p>
-            <p>Fecha: ${reserva.fecha}</p>
-            <p>Hora: ${reserva.hora}</p>
-            <p>Mesa: ${reserva.mesa ? reserva.mesa.numero : 'N/A'}</p>
-            ${reserva.observaciones ? `<p>Obs: ${reserva.observaciones}</p>` : ''}
-            <span class="badge badge-${reserva.estado}">${reserva.estado}</span>
-            <div class="card-actions">
-                <button class="btn-edit" onclick="editarReserva(${reserva.id})">Editar</button>
-                <button class="btn-delete" onclick="cancelarReserva(${reserva.id})">Cancelar</button>
+    lista.innerHTML = reservas.map(function(r) {
+        return `
+            <div class="card">
+                <h3>${r.nombre_cliente}</h3>
+                <p>📞 ${r.telefono_cliente}</p>
+                <p>👥 ${r.cantidad_personas} personas</p>
+                <p>📅 ${r.fecha} — ⏰ ${r.hora}</p>
+                <p>🪑 Mesa: ${r.mesa ? r.mesa.numero : 'N/A'}</p>
+                ${r.observaciones ? `<p>📝 ${r.observaciones}</p>` : ''}
+                <span class="badge badge-${r.estado}">${r.estado}</span>
+                <div class="card-actions">
+                    <button class="btn-editar" data-id="${r.id}">Editar</button>
+                    <button class="btn-eliminar" data-id="${r.id}">Cancelar</button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+
+    document.querySelectorAll('#listaReservas .btn-editar').forEach(function(btn) {
+        btn.addEventListener('click', function() { editarReserva(Number(btn.dataset.id)); });
+    });
+    document.querySelectorAll('#listaReservas .btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function() { cancelarReserva(Number(btn.dataset.id)); });
+    });
 }
 
-// Guardar reserva (crear o editar)
 async function guardarReserva() {
-    const nombre_cliente = document.getElementById('nombre_cliente').value;
-    const telefono_cliente = document.getElementById('telefono_cliente').value;
+    const nombre_cliente    = document.getElementById('nombre_cliente').value.trim();
+    const telefono_cliente  = document.getElementById('telefono_cliente').value.trim();
     const cantidad_personas = document.getElementById('cantidad_personas').value;
-    const fecha = document.getElementById('fecha').value;
-    const hora = document.getElementById('hora').value;
-    const mesa_id = document.getElementById('mesa_id').value;
-    const estado = document.getElementById('estado').value;
-    const observaciones = document.getElementById('observaciones').value;
-    const mensaje = document.getElementById('mensajeReserva');
+    const fecha             = document.getElementById('fecha').value;
+    const hora              = document.getElementById('hora').value;
+    const mesa_id           = document.getElementById('mesa_id').value;
+    const estado            = document.getElementById('estado').value;
+    const observaciones     = document.getElementById('observaciones').value;
+    const contenedor        = document.getElementById('mensajeReserva');
 
     if (!nombre_cliente || !telefono_cliente || !cantidad_personas || !fecha || !hora || !mesa_id) {
-        mensaje.innerHTML = '<div class="mensaje-error">Todos los campos son obligatorios</div>';
+        contenedor.innerHTML = '<div class="mensaje-error">Completa todos los campos obligatorios.</div>';
         return;
     }
 
+    const url    = reservaEditandoId ? `${RESERVAS_URL}/reservas/${reservaEditandoId}` : `${RESERVAS_URL}/reservas`;
+    const method = reservaEditandoId ? 'PUT' : 'POST';
+
     try {
-        const url = reservaEditandoId
-            ? `${RESERVAS_URL}/reservas/${reservaEditandoId}`
-            : `${RESERVAS_URL}/reservas`;
-
-        const method = reservaEditandoId ? 'PUT' : 'POST';
-
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token
-            },
-            body: JSON.stringify({ nombre_cliente, telefono_cliente, cantidad_personas, fecha, hora: hora + ':00', mesa_id, estado, observaciones })
+            headers: { 'Content-Type': 'application/json', 'Authorization': token },
+            body: JSON.stringify({ nombre_cliente, telefono_cliente, cantidad_personas, fecha, hora, mesa_id, estado, observaciones })
         });
-
         const data = await response.json();
 
         if (data.success) {
-            mensaje.innerHTML = `<div class="mensaje-exito">${data.message}</div>`;
+            contenedor.innerHTML = `<div class="mensaje-exito">${data.message}</div>`;
             cancelarEdicion();
             cargarReservas();
         } else {
-            mensaje.innerHTML = `<div class="mensaje-error">${data.message}</div>`;
+            contenedor.innerHTML = `<div class="mensaje-error">${data.message}</div>`;
         }
     } catch (error) {
-        mensaje.innerHTML = '<div class="mensaje-error">Error al guardar la reserva</div>';
+        contenedor.innerHTML = '<div class="mensaje-error">Error al guardar la reserva.</div>';
     }
 }
 
-// Editar reserva
-async function editarReserva(id) {
-    try {
-        const response = await fetch(`${RESERVAS_URL}/reservas`, {
-            headers: { 'Authorization': token }
-        });
-        const reservas = await response.json();
-        const reserva = reservas.find(r => r.id === id);
+function editarReserva(id) {
+    const r = todasLasReservas.find(function(x) { return x.id === id; });
+    if (!r) { return; }
 
-        if (reserva) {
-            reservaEditandoId = id;
-            document.getElementById('nombre_cliente').value = reserva.nombre_cliente;
-            document.getElementById('telefono_cliente').value = reserva.telefono_cliente;
-            document.getElementById('cantidad_personas').value = reserva.cantidad_personas;
-            document.getElementById('fecha').value = reserva.fecha;
-            document.getElementById('hora').value = reserva.hora.substring(0, 5);
-            document.getElementById('mesa_id').value = reserva.mesa_id;
-            document.getElementById('estado').value = reserva.estado;
-            document.getElementById('observaciones').value = reserva.observaciones || '';
-            document.getElementById('tituloFormulario').textContent = 'Editar Reserva';
-        }
-    } catch (error) {
-        console.error('Error al cargar reserva:', error);
-    }
+    reservaEditandoId = id;
+    document.getElementById('nombre_cliente').value    = r.nombre_cliente;
+    document.getElementById('telefono_cliente').value  = r.telefono_cliente;
+    document.getElementById('cantidad_personas').value = r.cantidad_personas;
+    document.getElementById('fecha').value             = r.fecha;
+    document.getElementById('hora').value              = r.hora;
+    document.getElementById('mesa_id').value           = r.mesa_id;
+    document.getElementById('estado').value            = r.estado;
+    document.getElementById('observaciones').value     = r.observaciones || '';
+    document.getElementById('tituloFormulario').textContent = 'Editar Reserva';
 }
 
-// Cancelar reserva
+function cancelarEdicion() {
+    reservaEditandoId = null;
+    ['nombre_cliente', 'telefono_cliente', 'cantidad_personas', 'fecha', 'hora', 'observaciones'].forEach(function(id) {
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('mesa_id').value = '';
+    document.getElementById('estado').value  = 'pendiente';
+    document.getElementById('tituloFormulario').textContent = 'Nueva Reserva';
+    document.getElementById('mensajeReserva').innerHTML = '';
+}
+
 async function cancelarReserva(id) {
-    if (!confirm('¿Estás segura de cancelar esta reserva?')) return;
+    if (!confirm('¿Cancelar esta reserva?')) { return; }
 
     try {
         const response = await fetch(`${RESERVAS_URL}/reservas/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': token }
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': token },
+            body: JSON.stringify({ estado: 'cancelada' })
         });
-
         const data = await response.json();
-
         if (data.success) {
             cargarReservas();
         } else {
             alert(data.message);
         }
     } catch (error) {
-        alert('Error al cancelar la reserva');
+        alert('Error al cancelar la reserva.');
     }
 }
 
-// Cancelar edición
-function cancelarEdicion() {
-    reservaEditandoId = null;
-    document.getElementById('nombre_cliente').value = '';
-    document.getElementById('telefono_cliente').value = '';
-    document.getElementById('cantidad_personas').value = '';
-    document.getElementById('fecha').value = '';
-    document.getElementById('hora').value = '';
-    document.getElementById('mesa_id').value = '';
-    document.getElementById('estado').value = 'pendiente';
-    document.getElementById('observaciones').value = '';
-    document.getElementById('tituloFormulario').textContent = 'Crear Nueva Reserva';
-    document.getElementById('mensajeReserva').innerHTML = '';
-}
-
-// Filtrar reservas
-async function filtrarReservas() {
-    const fecha = document.getElementById('filtroFecha').value;
-    const estado = document.getElementById('filtroEstado').value;
-    const cliente = document.getElementById('filtroCliente').value;
-
-    let url = `${RESERVAS_URL}/reservas?`;
-    if (fecha) url += `fecha=${fecha}&`;
-    if (estado) url += `estado=${estado}&`;
-    if (cliente) url += `cliente=${cliente}&`;
-
-    try {
-        const response = await fetch(url, {
-            headers: { 'Authorization': token }
-        });
-        const reservas = await response.json();
-        mostrarReservas(reservas);
-    } catch (error) {
-        console.error('Error al filtrar:', error);
-    }
-}
-
-// Iniciar
 cargarMesas();
 cargarReservas();

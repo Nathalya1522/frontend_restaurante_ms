@@ -1,54 +1,65 @@
-// URLs de los microservicios
-const RESERVAS_URL = 'http://127.0.0.1:8002';
+const RESERVAS_URL  = 'http://127.0.0.1:8002';
 const PRODUCTOS_URL = 'http://127.0.0.1:8003';
-const PEDIDOS_URL = 'http://127.0.0.1:8004';
+const PEDIDOS_URL   = 'http://127.0.0.1:8004';
 
-// Verificar sesión
-const token = localStorage.getItem('token');
+const token   = localStorage.getItem('token');
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 
 if (!token) {
     window.location.href = '../index.html';
 }
 
-// Mostrar nombre del usuario
-document.getElementById('bienvenida').textContent = `Bienvenido, ${usuario.nombre}`;
+if (usuario) {
+    document.getElementById('bienvenida').textContent = `Bienvenido, ${usuario.nombre} 👋`;
+}
 
-// Cargar estadísticas
+document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = '../index.html';
+});
+
 async function cargarEstadisticas() {
     try {
-        // Total de mesas disponibles
         const resMesas = await fetch(`${RESERVAS_URL}/mesas`, {
             headers: { 'Authorization': token }
         });
-        const mesas = await resMesas.json();
-        const mesasDisponibles = mesas.filter(m => m.estado === 'disponible').length;
-        document.getElementById('totalMesas').textContent = mesasDisponibles;
+        if (resMesas.ok) {
+            const mesas = await resMesas.json();
+            const disponibles = mesas.filter(function(m) { return m.estado === 'disponible'; }).length;
+            document.getElementById('totalMesas').textContent = disponibles;
+        }
+    } catch (e) { /* microservicio no disponible */ }
 
-        // Total de reservas pendientes
+    try {
         const resReservas = await fetch(`${RESERVAS_URL}/reservas?estado=pendiente`, {
             headers: { 'Authorization': token }
         });
-        const reservas = await resReservas.json();
-        document.getElementById('totalReservas').textContent = reservas.length;
+        if (resReservas.ok) {
+            const reservas = await resReservas.json();
+            document.getElementById('totalReservas').textContent = reservas.length;
+        }
+    } catch (e) { /* microservicio no disponible */ }
 
-        // Total de productos
+    try {
         const resProductos = await fetch(`${PRODUCTOS_URL}/productos`, {
             headers: { 'Authorization': token }
         });
-        const productos = await resProductos.json();
-        document.getElementById('totalProductos').textContent = productos.length;
+        if (resProductos.ok) {
+            const productos = await resProductos.json();
+            document.getElementById('totalProductos').textContent = productos.length;
+        }
+    } catch (e) { /* microservicio no disponible */ }
 
-        // Total de pedidos activos
+    try {
         const resPedidos = await fetch(`${PEDIDOS_URL}/pedidos?estado=pendiente`, {
             headers: { 'Authorization': token }
         });
-        const pedidos = await resPedidos.json();
-        document.getElementById('totalPedidos').textContent = pedidos.length;
-
-    } catch (error) {
-        console.error('Error cargando estadísticas:', error);
-    }
+        if (resPedidos.ok) {
+            const pedidos = await resPedidos.json();
+            document.getElementById('totalPedidos').textContent = pedidos.length;
+        }
+    } catch (e) { /* microservicio no disponible */ }
 }
 
 cargarEstadisticas();

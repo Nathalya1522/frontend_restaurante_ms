@@ -8,63 +8,69 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="dashboard.html">Sabores del Mundo</a>
+        <a class="navbar-brand" href="dashboard.html"><span>Sabores</span> del Mundo</a>
         <ul class="navbar-nav">
             <li><a href="dashboard.html">Inicio</a></li>
-            <li><a href="mesas.html" class="active">Mesas</a></li>
+            <li><a href="mesas.html" class="activo">Mesas</a></li>
             <li><a href="reservas.html">Reservas</a></li>
             <li><a href="productos.html">Productos</a></li>
             <li><a href="pedidos.html">Pedidos</a></li>
         </ul>
-        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        <button class="btn-logout" id="btnCerrarSesion">Cerrar sesión</button>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="main-content">
+
         <div class="page-header">
-            <h2>Gestión de Mesas</h2>
-            <p>Administra las mesas del restaurante</p>
+            <h2>🪑 Mesas</h2>
+            <p>Gestiona las mesas del restaurante</p>
         </div>
 
-        <!-- Formulario crear mesa -->
-        <div class="form-container">
-            <h3 id="tituloFormulario">Crear Nueva Mesa</h3>
-            <div id="mensajeMesa"></div>
-            <div class="form-row">
+        <div class="layout-2col">
+
+            <div class="panel">
+                <h3 id="tituloFormulario">Nueva Mesa</h3>
+                <div id="mensajeMesa"></div>
+
                 <div class="form-group">
-                    <label>Número de Mesa</label>
-                    <input type="text" id="numero" placeholder="Ej: MESA-5">
+                    <label for="numero">Número de mesa</label>
+                    <input type="text" id="numero" name="numero" placeholder="Ej: Mesa 1">
                 </div>
                 <div class="form-group">
-                    <label>Capacidad</label>
-                    <input type="number" id="capacidad" placeholder="Ej: 4" min="1">
+                    <label for="capacidad">Capacidad (personas)</label>
+                    <input type="number" id="capacidad" name="capacidad" placeholder="Ej: 4" min="1">
                 </div>
                 <div class="form-group">
-                    <label>Estado</label>
-                    <select id="estado">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado">
                         <option value="disponible">Disponible</option>
-                        <option value="reservada">Reservada</option>
                         <option value="ocupada">Ocupada</option>
-                        <option value="fuera_servicio">Fuera de Servicio</option>
+                        <option value="reservada">Reservada</option>
+                        <option value="mantenimiento">Mantenimiento</option>
                     </select>
                 </div>
-            </div>
-            <button class="btn-primary" onclick="guardarMesa()" style="width:auto; padding: 10px 30px;">Guardar Mesa</button>
-            <button class="btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
-        </div>
 
-        <!-- Lista de mesas -->
-        <div id="listaMesas" class="cards-grid">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Cargando mesas...</p>
+                <button type="button" class="btn-primario" id="btnGuardarMesa">Guardar Mesa</button>
+                <button type="button" class="btn-secundario" id="btnCancelarMesa">Limpiar</button>
             </div>
+
+            <div>
+                <div class="filtros">
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="ocupada">Ocupada</option>
+                        <option value="reservada">Reservada</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="cards-grid" id="listaMesas"></div>
+            </div>
+
         </div>
     </div>
 
-    <script src="../js/auth.js"></script>
     <script src="../js/mesas.js"></script>
 </body>
 </html>

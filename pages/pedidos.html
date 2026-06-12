@@ -8,90 +8,73 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="dashboard.html">Sabores del Mundo</a>
+        <a class="navbar-brand" href="dashboard.html"><span>Sabores</span> del Mundo</a>
         <ul class="navbar-nav">
             <li><a href="dashboard.html">Inicio</a></li>
             <li><a href="mesas.html">Mesas</a></li>
             <li><a href="reservas.html">Reservas</a></li>
             <li><a href="productos.html">Productos</a></li>
-            <li><a href="pedidos.html" class="active">Pedidos</a></li>
+            <li><a href="pedidos.html" class="activo">Pedidos</a></li>
         </ul>
-        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        <button class="btn-logout" id="btnCerrarSesion">Cerrar sesión</button>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="main-content">
+
         <div class="page-header">
-            <h2>Gestión de Pedidos</h2>
-            <p>Administra los pedidos de las mesas</p>
+            <h2>🛒 Pedidos</h2>
+            <p>Gestiona los pedidos de las mesas</p>
         </div>
 
-        <!-- Formulario crear pedido -->
-        <div class="form-container">
-            <h3>Crear Nuevo Pedido</h3>
-            <div id="mensajePedido"></div>
-            <div class="form-row">
+        <div class="layout-2col">
+
+            <div class="panel">
+                <h3>Nuevo Pedido</h3>
+                <div id="mensajePedido"></div>
+
                 <div class="form-group">
-                    <label>Mesa</label>
-                    <select id="mesa_id">
+                    <label for="mesa_id">Mesa</label>
+                    <select id="mesa_id" name="mesa_id">
                         <option value="">Selecciona una mesa</option>
                     </select>
                 </div>
-            </div>
-
-            <!-- Productos del pedido -->
-            <h4 style="color:#c0392b; margin-bottom:10px;">Productos del pedido</h4>
-            <div class="form-row">
                 <div class="form-group">
-                    <label>Producto</label>
-                    <select id="productoSeleccionado">
+                    <label for="producto_id">Producto</label>
+                    <select id="producto_id" name="producto_id">
                         <option value="">Selecciona un producto</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Cantidad</label>
-                    <input type="number" id="cantidadProducto" placeholder="Cantidad" min="1" value="1">
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" id="cantidad" name="cantidad" placeholder="Ej: 2" min="1" value="1">
                 </div>
-                <div class="form-group" style="display:flex; align-items:flex-end;">
-                    <button class="btn-success" onclick="agregarProducto()">Agregar</button>
+                <div class="form-group">
+                    <label for="observaciones">Observaciones (opcional)</label>
+                    <textarea id="observaciones" name="observaciones" placeholder="Ej: sin cebolla..."></textarea>
                 </div>
+
+                <button type="button" class="btn-primario" id="btnGuardarPedido">Crear Pedido</button>
+                <button type="button" class="btn-secundario" id="btnLimpiarPedido">Limpiar</button>
             </div>
 
-            <!-- Lista de productos agregados -->
-            <div id="listaProductosPedido" style="margin-bottom:15px;"></div>
-            <p>Total: <strong id="totalPedido">$0</strong></p>
-
-            <button class="btn-primary" onclick="crearPedido()" style="width:auto; padding: 10px 30px;">Crear Pedido</button>
-            <button class="btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
-        </div>
-
-        <!-- Filtros -->
-        <div class="filtros">
-            <div class="form-group">
-                <label>Filtrar por estado</label>
-                <select id="filtroEstado" onchange="filtrarPedidos()">
-                    <option value="">Todos</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en_preparacion">En preparación</option>
-                    <option value="entregado">Entregado</option>
-                    <option value="pagado">Pagado</option>
-                    <option value="cancelado">Cancelado</option>
-                </select>
+            <div>
+                <div class="filtros">
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_preparacion">En preparación</option>
+                        <option value="entregado">Entregado</option>
+                        <option value="pagado">Pagado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="cards-grid" id="listaPedidos"></div>
             </div>
-        </div>
 
-        <!-- Lista de pedidos -->
-        <div id="listaPedidos" class="cards-grid">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Cargando pedidos...</p>
-            </div>
         </div>
     </div>
 
-    <script src="../js/auth.js"></script>
     <script src="../js/pedidos.js"></script>
 </body>
 </html>

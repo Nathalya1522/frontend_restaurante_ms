@@ -8,111 +8,89 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
-        <a class="navbar-brand" href="dashboard.html">Sabores del Mundo</a>
+        <a class="navbar-brand" href="dashboard.html"><span>Sabores</span> del Mundo</a>
         <ul class="navbar-nav">
             <li><a href="dashboard.html">Inicio</a></li>
             <li><a href="mesas.html">Mesas</a></li>
-            <li><a href="reservas.html" class="active">Reservas</a></li>
+            <li><a href="reservas.html" class="activo">Reservas</a></li>
             <li><a href="productos.html">Productos</a></li>
             <li><a href="pedidos.html">Pedidos</a></li>
         </ul>
-        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        <button class="btn-logout" id="btnCerrarSesion">Cerrar sesión</button>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="main-content">
+
         <div class="page-header">
-            <h2>Gestión de Reservas</h2>
-            <p>Administra las reservas de los clientes</p>
+            <h2>📋 Reservas</h2>
+            <p>Gestiona las reservas de los clientes</p>
         </div>
 
-        <!-- Formulario crear reserva -->
-        <div class="form-container">
-            <h3 id="tituloFormulario">Crear Nueva Reserva</h3>
-            <div id="mensajeReserva"></div>
-            <div class="form-row">
+        <div class="layout-2col">
+
+            <div class="panel">
+                <h3 id="tituloFormulario">Nueva Reserva</h3>
+                <div id="mensajeReserva"></div>
+
                 <div class="form-group">
-                    <label>Nombre del Cliente</label>
-                    <input type="text" id="nombre_cliente" placeholder="Nombre completo">
+                    <label for="nombre_cliente">Nombre del cliente</label>
+                    <input type="text" id="nombre_cliente" name="nombre_cliente" placeholder="Nombre completo">
                 </div>
                 <div class="form-group">
-                    <label>Teléfono</label>
-                    <input type="text" id="telefono_cliente" placeholder="Ej: 3001234567">
+                    <label for="telefono_cliente">Teléfono</label>
+                    <input type="text" id="telefono_cliente" name="telefono_cliente" placeholder="Ej: 3001234567">
                 </div>
                 <div class="form-group">
-                    <label>Cantidad de Personas</label>
-                    <input type="number" id="cantidad_personas" placeholder="Ej: 4" min="1">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="fecha">
+                    <label for="cantidad_personas">Cantidad de personas</label>
+                    <input type="number" id="cantidad_personas" name="cantidad_personas" placeholder="Ej: 4" min="1">
                 </div>
                 <div class="form-group">
-                    <label>Hora</label>
-                    <input type="time" id="hora">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" name="fecha">
                 </div>
                 <div class="form-group">
-                    <label>Mesa</label>
-                    <select id="mesa_id">
+                    <label for="hora">Hora</label>
+                    <input type="time" id="hora" name="hora">
+                </div>
+                <div class="form-group">
+                    <label for="mesa_id">Mesa</label>
+                    <select id="mesa_id" name="mesa_id">
                         <option value="">Selecciona una mesa</option>
                     </select>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
-                    <label>Estado</label>
-                    <select id="estado">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado">
                         <option value="pendiente">Pendiente</option>
                         <option value="confirmada">Confirmada</option>
                         <option value="cancelada">Cancelada</option>
-                        <option value="finalizada">Finalizada</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Observaciones</label>
-                    <textarea id="observaciones" placeholder="Observaciones adicionales" rows="2"></textarea>
+                    <label for="observaciones">Observaciones (opcional)</label>
+                    <textarea id="observaciones" name="observaciones" placeholder="Notas adicionales..."></textarea>
                 </div>
-            </div>
-            <button class="btn-primary" onclick="guardarReserva()" style="width:auto; padding: 10px 30px;">Guardar Reserva</button>
-            <button class="btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
-        </div>
 
-        <!-- Filtros -->
-        <div class="filtros">
-            <div class="form-group">
-                <label>Buscar por fecha</label>
-                <input type="date" id="filtroFecha" onchange="filtrarReservas()">
+                <button type="button" class="btn-primario" id="btnGuardarReserva">Guardar Reserva</button>
+                <button type="button" class="btn-secundario" id="btnCancelarReserva">Limpiar</button>
             </div>
-            <div class="form-group">
-                <label>Buscar por estado</label>
-                <select id="filtroEstado" onchange="filtrarReservas()">
-                    <option value="">Todos</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="confirmada">Confirmada</option>
-                    <option value="cancelada">Cancelada</option>
-                    <option value="finalizada">Finalizada</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Buscar por cliente</label>
-                <input type="text" id="filtroCliente" placeholder="Nombre del cliente" oninput="filtrarReservas()">
-            </div>
-        </div>
 
-        <!-- Lista de reservas -->
-        <div id="listaReservas" class="cards-grid">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Cargando reservas...</p>
+            <div>
+                <div class="filtros">
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="cards-grid" id="listaReservas"></div>
             </div>
+
         </div>
     </div>
 
-    <script src="../js/auth.js"></script>
     <script src="../js/reservas.js"></script>
 </body>
 </html>
