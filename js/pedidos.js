@@ -91,13 +91,20 @@ function mostrarPedidos(pedidos) {
         return;
     }
     lista.innerHTML = pedidos.map(function(p) {
+        // Los productos vienen en p.detalles[], no en p.producto
+        const detallesTexto = (p.detalles && p.detalles.length > 0)
+            ? p.detalles.map(function(d) {
+                return `${d.nombre_producto} x${d.cantidad}`;
+              }).join(', ')
+            : 'Sin detalles';
+
         return `
             <div class="card">
                 <h3>Pedido #${p.id}</h3>
-                <p>🪑 Mesa: ${p.mesa ? p.mesa.numero : 'N/A'}</p>
-                <p>🍽️ ${p.producto ? p.producto.nombre : 'N/A'}</p>
-                <p>🔢 Cantidad: ${p.cantidad}</p>
-                ${p.observaciones ? `<p>📝 ${p.observaciones}</p>` : ''}
+                <p>🪑 Mesa ID: ${p.mesa_id}</p>
+                <p>🍽️ ${detallesTexto}</p>
+                <p>💰 Total: $${Number(p.total).toLocaleString()}</p>
+                <p>📅 ${p.fecha} ${p.hora}</p>
                 <span class="badge ${obtenerClaseBadge(p.estado)}">${p.estado}</span>
                 <div class="card-actions">
                     <button class="btn-editar" data-id="${p.id}" data-estado="${p.estado}">Avanzar estado</button>
@@ -118,22 +125,43 @@ function mostrarPedidos(pedidos) {
 }
 
 async function guardarPedido() {
-    const mesa_id      = document.getElementById('mesa_id').value;
-    const producto_id  = document.getElementById('producto_id').value;
-    const cantidad     = document.getElementById('cantidad').value;
-    const observaciones = document.getElementById('observaciones').value;
-    const contenedor   = document.getElementById('mensajePedido');
+    const mesa_id    = document.getElementById('mesa_id').value;
+    const producto_id = document.getElementById('producto_id').value;
+    const cantidad   = document.getElementById('cantidad').value;
+    const contenedor = document.getElementById('mensajePedido');
 
     if (!mesa_id || !producto_id || !cantidad) {
         contenedor.innerHTML = '<div class="mensaje-error">Mesa, producto y cantidad son obligatorios.</div>';
         return;
     }
 
+    // Leer nombre y precio desde el texto del <option> seleccionado
+    // El texto tiene formato: "Nombre del Producto — $28000"
+    const selectProducto  = document.getElementById('producto_id');
+    const textoOpcion     = selectProducto.options[selectProducto.selectedIndex].text;
+    const partes          = textoOpcion.split(' — $');
+    const nombre_producto = partes[0].trim();
+    // Limpiar el precio: quitar puntos de miles y convertir a número
+    const precio_unitario = parseFloat((partes[1] || '0').replace(/\./g, '').replace(',', '.'));
+
+    // El backend espera un array de productos
+    const body = {
+        mesa_id:   parseInt(mesa_id),
+        productos: [
+            {
+                producto_id:     parseInt(producto_id),
+                nombre_producto: nombre_producto,
+                cantidad:        parseInt(cantidad),
+                precio_unitario: precio_unitario
+            }
+        ]
+    };
+
     try {
         const response = await fetch(`${PEDIDOS_URL}/pedidos`, {
-            method: 'POST',
+            method:  'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': token },
-            body: JSON.stringify({ mesa_id, producto_id, cantidad, observaciones })
+            body:    JSON.stringify(body)
         });
         const data = await response.json();
 

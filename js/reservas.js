@@ -91,7 +91,10 @@ async function guardarReserva() {
     const nombre_cliente    = document.getElementById('nombre_cliente').value.trim();
     const telefono_cliente  = document.getElementById('telefono_cliente').value.trim();
     const cantidad_personas = document.getElementById('cantidad_personas').value;
-    const fecha             = document.getElementById('fecha').value;
+    const fechaRaw = document.getElementById('fecha').value;
+    const fecha = fechaRaw.includes('/') 
+    ? fechaRaw.split('/').reverse().join('-') 
+    : fechaRaw;
     const hora              = document.getElementById('hora').value;
     const mesa_id           = document.getElementById('mesa_id').value;
     const estado            = document.getElementById('estado').value;
