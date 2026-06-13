@@ -5,6 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sabores del Mundo - Pedidos</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .carrito-vacio {
+            text-align: center;
+            padding: 18px 10px;
+            color: var(--gris-texto);
+            font-size: 0.85rem;
+            border: 2px dashed var(--gris-claro);
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        .carrito-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .carrito-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #FAFAFA;
+            border: 2px solid var(--gris-claro);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .carrito-item-nombre {
+            flex: 1;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--texto);
+        }
+        .carrito-item-precio {
+            font-size: 0.78rem;
+            color: var(--gris-texto);
+            white-space: nowrap;
+        }
+        .carrito-item-cantidad {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-cantidad {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--rosa);
+            background: transparent;
+            color: var(--rosa);
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 6px;
+            cursor: pointer;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s, color 0.15s;
+        }
+        .btn-cantidad:hover {
+            background-color: var(--rosa);
+            color: var(--blanco);
+        }
+        .cantidad-numero {
+            width: 28px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .btn-quitar-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--rosa);
+            padding: 2px 4px;
+            border-radius: 6px;
+            transition: background-color 0.15s;
+        }
+        .btn-quitar-item:hover { background-color: #FFF0F5; }
+        .carrito-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 10px 12px;
+            background-color: #FFF0F5;
+            border: 2px solid var(--rosa);
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        .carrito-total span:last-child { color: var(--rosa); font-size: 1.05rem; }
+        .btn-agregar-carrito {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--azul);
+            color: #111;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            box-shadow: var(--sombra-azul);
+            transition: filter 0.2s, transform 0.2s;
+            margin-bottom: 14px;
+        }
+        .btn-agregar-carrito:hover { filter: brightness(1.07); transform: translateY(-1px); }
+        .separador { border: none; border-top: 2px solid var(--gris-claro); margin: 16px 0; }
+        .seccion-titulo {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--gris-texto);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -39,6 +157,10 @@
                         <option value="">Selecciona una mesa</option>
                     </select>
                 </div>
+
+                <hr class="separador">
+                <p class="seccion-titulo">➕ Agregar producto</p>
+
                 <div class="form-group">
                     <label for="producto_id">Producto</label>
                     <select id="producto_id" name="producto_id">
@@ -49,13 +171,24 @@
                     <label for="cantidad">Cantidad</label>
                     <input type="number" id="cantidad" name="cantidad" placeholder="Ej: 2" min="1" value="1">
                 </div>
+
+                <button type="button" class="btn-agregar-carrito" id="btnAgregarAlCarrito">
+                    ➕ Agregar al carrito
+                </button>
+
+                <hr class="separador">
+                <p class="seccion-titulo">🛒 Carrito</p>
+                <div id="carritoContenido">
+                    <div class="carrito-vacio">El carrito está vacío</div>
+                </div>
+
                 <div class="form-group">
                     <label for="observaciones">Observaciones (opcional)</label>
                     <textarea id="observaciones" name="observaciones" placeholder="Ej: sin cebolla..."></textarea>
                 </div>
 
                 <button type="button" class="btn-primario" id="btnGuardarPedido">Crear Pedido</button>
-                <button type="button" class="btn-secundario" id="btnLimpiarPedido">Limpiar</button>
+                <button type="button" class="btn-secundario" id="btnLimpiarPedido">Limpiar todo</button>
             </div>
 
             <div>
