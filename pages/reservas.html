@@ -65,6 +65,7 @@
                         <option value="pendiente">Pendiente</option>
                         <option value="confirmada">Confirmada</option>
                         <option value="cancelada">Cancelada</option>
+                        <option value="finalizada">Finalizada</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -77,14 +78,19 @@
             </div>
 
             <div>
-                <div class="filtros">
-                    <select id="filtroEstado">
-                        <option value="">Todos los estados</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="confirmada">Confirmada</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
-                </div>
+                    <div class="filtros">
+                        <input type="date" id="filtroFecha" placeholder="Buscar por fecha">
+                        <input type="text" id="filtroCliente" placeholder="Buscar por cliente">
+                        <select id="filtroEstado">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="confirmada">Confirmada</option>
+                            <option value="cancelada">Cancelada</option>
+                            <option value="finalizada">Finalizada</option>
+                        </select>
+                        <button type="button" id="btnFiltrar" class="btn-primario">Buscar</button>
+                        <button type="button" id="btnLimpiarFiltro" class="btn-secundario">Limpiar</button>
+                    </div>
                 <div class="cards-grid" id="listaReservas"></div>
             </div>
 

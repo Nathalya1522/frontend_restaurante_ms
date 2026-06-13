@@ -108,7 +108,7 @@ function mostrarPedidos(pedidos) {
                 <span class="badge ${obtenerClaseBadge(p.estado)}">${p.estado}</span>
                 <div class="card-actions">
                     <button class="btn-editar" data-id="${p.id}" data-estado="${p.estado}">Avanzar estado</button>
-                    <button class="btn-eliminar" data-id="${p.id}">Eliminar</button>
+                    <button class="btn-eliminar" data-id="${p.id}">Cancelar</button>
                 </div>
             </div>
         `;

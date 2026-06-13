@@ -17,6 +17,8 @@ document.getElementById('btnCerrarSesion').addEventListener('click', function() 
 document.getElementById('btnGuardarReserva').addEventListener('click', guardarReserva);
 document.getElementById('btnCancelarReserva').addEventListener('click', cancelarEdicion);
 document.getElementById('filtroEstado').addEventListener('change', filtrarReservas);
+document.getElementById('btnFiltrar').addEventListener('click', filtrarReservas);
+document.getElementById('btnLimpiarFiltro').addEventListener('click', limpiarFiltros);
 
 async function cargarMesas() {
     try {
@@ -47,12 +49,36 @@ async function cargarReservas() {
     }
 }
 
-function filtrarReservas() {
-    const estado = document.getElementById('filtroEstado').value;
-    const filtradas = estado
-        ? todasLasReservas.filter(function(r) { return r.estado === estado; })
-        : todasLasReservas;
-    mostrarReservas(filtradas);
+// Filtra consultando el backend con los 3 parámetros
+async function filtrarReservas() {
+    const estado  = document.getElementById('filtroEstado').value;
+    const fecha   = document.getElementById('filtroFecha').value;
+    const cliente = document.getElementById('filtroCliente').value.trim();
+
+    // Construir query string con los filtros activos
+    const params = new URLSearchParams();
+    if (estado)  params.append('estado', estado);
+    if (fecha)   params.append('fecha', fecha);
+    if (cliente) params.append('cliente', cliente);
+
+    try {
+        const url = `${RESERVAS_URL}/reservas${params.toString() ? '?' + params.toString() : ''}`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': token }
+        });
+        todasLasReservas = await response.json();
+        mostrarReservas(todasLasReservas);
+    } catch (error) {
+        document.getElementById('listaReservas').innerHTML = '<p class="mensaje-error">Error al filtrar.</p>';
+    }
+}
+
+// Limpia todos los filtros y recarga
+function limpiarFiltros() {
+    document.getElementById('filtroEstado').value  = '';
+    document.getElementById('filtroFecha').value   = '';
+    document.getElementById('filtroCliente').value = '';
+    cargarReservas();
 }
 
 function mostrarReservas(reservas) {
@@ -91,10 +117,10 @@ async function guardarReserva() {
     const nombre_cliente    = document.getElementById('nombre_cliente').value.trim();
     const telefono_cliente  = document.getElementById('telefono_cliente').value.trim();
     const cantidad_personas = document.getElementById('cantidad_personas').value;
-    const fechaRaw = document.getElementById('fecha').value;
-    const fecha = fechaRaw.includes('/') 
-    ? fechaRaw.split('/').reverse().join('-') 
-    : fechaRaw;
+    const fechaRaw          = document.getElementById('fecha').value;
+    const fecha             = fechaRaw.includes('/')
+        ? fechaRaw.split('/').reverse().join('-')
+        : fechaRaw;
     const hora              = document.getElementById('hora').value;
     const mesa_id           = document.getElementById('mesa_id').value;
     const estado            = document.getElementById('estado').value;
